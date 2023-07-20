@@ -5,13 +5,18 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from bson.objectid import ObjectId
 import os
 from dotenv import load_dotenv
-
+from flask_cors import CORS
+from bson import json_util
 
 # Load environment variables from .env
 load_dotenv()
 
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
+
 # app.config['MONGO_URI'] = 'mongodb+srv://ashish:ashish@cluster0.dsmyzjx.mongodb.net/cinematrix?retryWrites=true&w=majority'
 # app.config['JWT_SECRET_KEY'] = 'ashish'
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
@@ -176,6 +181,91 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify({'user_id': current_user}), 200
 
+# ***********************Movie route start**************************
+class Movie:
+    def __init__(self, title, description, genre):
+        self.title = title
+        self.description = description
+        self.genre = genre
+
+class Show:
+    def __init__(self, movie_id, timings, categories):
+        self.movie_id = movie_id
+        self.timings = timings
+        self.categories = categories
+
+class Event:
+    def __init__(self, name, description, date):
+        self.name = name
+        self.description = description
+        self.date = date
+
+# ====================Get all movie =============================================
+@app.route('/api/movies', methods=['GET'])
+def get_movies():
+    movies_list = list(mongo.db.movie.find())
+    # return json_util.dumps(movies_list), 200
+    result = []
+    for movie in movies_list:
+        result.append({
+            '_id': str(movie['_id']),
+            'title':movie['title'],
+            'description': movie['description'],
+            'genre': movie['genre'],
+        })
+    return jsonify(result), 200
+
+# ====================get movie by movie_id==============================
+@app.route('/api/movies/<movie_id>', methods=['GET'])
+def get_movie(movie_id):
+    movies_list = mongo.db.movie.find_one({'_id': ObjectId(movie_id)})
+    if movies_list:
+        result={
+            '_id': str(movies_list['_id']),
+            'title':movies_list['title'],
+            'description': movies_list['description'],
+            'genre': movies_list['genre']
+        }
+        return jsonify(result), 200
+    else:
+        return jsonify({'message': 'Movie not found'}), 404
+
+# ============================movie added=============================
+@app.route('/api/movies', methods=['POST'])
+def create_movie():
+    data = request.json
+    title = data.get('title')
+    
+    if not title:
+        return jsonify({'message': 'Movie title is required'}), 400
+
+    # Check if the movie with the same title already exists
+    existing_movie = mongo.db.movie.find_one({'title': title})
+    if existing_movie:
+        return jsonify({'message': 'Movie already exists'}), 409
+
+    movie = Movie(data['title'], data['description'], data['genre'])
+    movie_id = mongo.db.movie.insert_one(movie.__dict__).inserted_id
+    return jsonify({'message': 'Movie created', 'movie_id': str(movie_id)}), 201
+
+# ================================Edit movie data ==========================
+@app.route('/api/movies/<string:movie_id>', methods=['PUT'])
+def update_movie(movie_id):
+    data = request.json
+    movie = Movie(data['title'], data['description'], data['genre'])
+    result = mongo.db.movie.update_one({'_id': ObjectId(movie_id)}, {'$set': movie.__dict__})
+    if result.modified_count > 0:
+        return jsonify({'message': 'Movie updated'}), 200
+    return jsonify({'message': 'Movie not found'}), 404
+
+
+# ==============================Delete Movie Data==============================
+@app.route('/api/movies/<string:movie_id>', methods=['DELETE'])
+def delete_movie(movie_id):
+    result = mongo.db.movie.delete_one({'_id': ObjectId(movie_id)})
+    if result.deleted_count > 0:
+        return jsonify({'message': 'Movie deleted'}), 200
+    return jsonify({'message': 'Movie not found'}), 404
 
 
 
