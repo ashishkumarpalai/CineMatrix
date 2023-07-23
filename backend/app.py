@@ -55,6 +55,7 @@ def get_user(user_id):
     user = mongo.db.users.find_one({'_id': ObjectId(user_id)})
     if user:
         result = {
+            'name':user['name'],
             'id': str(user['_id']),
             'username': user['username'],
             'user_status': user['user_status'],
@@ -65,7 +66,7 @@ def get_user(user_id):
         }
         return jsonify(result), 200
     else:
-        return jsonify('User not found'), 404
+        return jsonify({'message':'User not found'}), 404
     
 
 # =============================user put ==============================
@@ -74,6 +75,7 @@ def get_user(user_id):
 def update_user(user_id):
     user_data = request.get_json()
     user = {
+        'name':user_data['name'],
         'username': user_data['email'],
         'user_status': user_data['user_status'],
         'gender': user_data['gender'],
@@ -83,9 +85,9 @@ def update_user(user_id):
     }
     result = mongo.db.users.update_one({'_id': ObjectId(user_id)}, {'$set': user})
     if result.modified_count > 0:
-        return jsonify('User updated successfully'), 200
+        return jsonify({'message':'User updated successfully'}), 200
     else:
-        return jsonify('User not found'), 404
+        return jsonify({'message':'User not found'}), 404
 
 # ================================== user delete=================================
 
@@ -93,9 +95,9 @@ def update_user(user_id):
 def delete_user(user_id):
     result = mongo.db.users.delete_one({'_id': ObjectId(user_id)})
     if result.deleted_count > 0:
-        return jsonify('User deleted successfully'), 200
+        return jsonify({'message': 'User deleted successfully'}), 200
     else:
-        return jsonify('User not found'), 404
+        return jsonify({'message': 'User not found'}), 404
     
 
 # ==============================================user register ==============================================
@@ -145,7 +147,7 @@ def login():
     # Check if the password is correct
     if bcrypt.check_password_hash(user['password'], password):
         access_token = create_access_token(identity=str(user['_id']))
-        return jsonify({'access_token': access_token}), 200
+        return jsonify({'message': 'Login successfully',"name":user['name'],'access_token': access_token}), 200
     else:
         return jsonify({'message': 'Invalid username or password'}), 401
 
