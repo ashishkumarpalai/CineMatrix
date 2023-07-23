@@ -95,7 +95,7 @@ form2.addEventListener("click", (e) => {
                 )
                 document.getElementById("email1").value = ""
                 document.getElementById("password1").value = ""
-                window.location.href="navbar.html"
+                window.location.href="movie.html"
                 // window.open("product.html")
             } else if (res.message === "Invalid username or password") {
                 Swal.fire({
