@@ -25,7 +25,7 @@ jwt = JWTManager(app)
 
 @app.route("/")
 def get():
-    return "Wellcome cinematrix"
+    return '<h1 style="color:blue;text-align:center">Wellcome To cinematrix Backend</h1>'
     
 
 # ==============================================get all users ==============================================
