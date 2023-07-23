@@ -71,6 +71,10 @@ form2.addEventListener("click", (e) => {
         password: document.getElementById("password1").value
     }
     console.log(payload)
+    if(payload.email=="admin@gmail.com" && payload.password=="admin"){
+        localStorage.setItem("admin", payload.email);
+        window.location.href="admin.html"
+    }
     fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: {
@@ -91,7 +95,7 @@ form2.addEventListener("click", (e) => {
                 )
                 document.getElementById("email1").value = ""
                 document.getElementById("password1").value = ""
-                // window.location.href="../html/navbar.html"
+                window.location.href="navbar.html"
                 // window.open("product.html")
             } else if (res.message === "Invalid username or password") {
                 Swal.fire({

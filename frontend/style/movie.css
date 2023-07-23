@@ -1,0 +1,57 @@
+.top {
+    min-height: 40vw;
+    /* background-image: none; */
+    margin-top: 70px;
+
+}
+
+/* Define the animation keyframes */
+@keyframes colorChange {
+    0% {
+        color: red;
+    }
+
+    50% {
+        color: blue;
+    }
+
+    100% {
+        color: green;
+    }
+}
+
+/* Apply the animation accountname to the h1 tag */
+.color-animation {
+    animation-name: colorChange;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+
+/* navbar backgrond animations */
+
+#navcolor {
+    /*Cool marine gradient: Grey, blue, violet, grey again */
+    background: linear-gradient(45deg,
+            #bdc3c7,
+            #2c3e50,
+            #c33764,
+            #1d2671,
+            #141e30,
+            #6dd5ed);
+    background-size: 400% 400%;
+    animation: backgroundChange8 15s ease infinite;
+}
+
+@keyframes backgroundChange8 {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
