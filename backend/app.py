@@ -263,6 +263,33 @@ def delete_movie(movie_id):
 
 # # ************************Show CRUD operations for a specific Movie******************************
 
+@app.route('/api/movies-with-shows', methods=['GET'])
+def get_movies_with_shows():
+    movies = mongo.db.movie.find()
+    result = []
+    for movie in movies:
+        movie_id = str(movie['_id'])
+        shows_list = list(mongo.db.shows.find({'movie_id': movie_id}))
+        shows = []
+        for show in shows_list:
+            shows.append({
+                '_id': str(show['_id']),
+                'timings': show['timings'],
+                'categories': show['categories'],
+                'genre':show['genre']
+            })
+
+        result.append({
+            '_id': movie_id,
+            'title': movie['title'],
+            'description': movie['description'],
+            'genre': movie['genre'],
+            'image': movie['image'],
+            'shows': shows
+        })
+
+    return jsonify(result), 200
+
 @app.route('/api/movies/<string:movie_id>/shows', methods=['GET'])
 def get_shows_for_movie(movie_id):
     movie = mongo.db.movie.find_one({'_id': ObjectId(movie_id)})
@@ -272,6 +299,7 @@ def get_shows_for_movie(movie_id):
         for show in shows_list:
             result.append({
                 '_id': str(show['_id']),
+                'movie_id':show['movie_id'],
                 'timings': show['timings'],
                 'categories': show['categories']
             })
@@ -330,6 +358,8 @@ def delete_show_for_movie(movie_id, show_id):
     if result.deleted_count > 0:
         return jsonify({'message': 'Show deleted'}), 200
     return jsonify({'message': 'Show not found'}), 404
+
+
 
 # **************************************************Routes for Events***********************************************************
 
