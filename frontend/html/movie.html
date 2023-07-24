@@ -4,7 +4,125 @@
     <title>Streaming Service</title>
     <link rel="stylesheet" href="../style/index.css">
     <link rel="stylesheet" href="../style/movie.css">
+    <style>
+        /* Add your responsive CSS styling here for movie cards */
+        .movie-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
 
+        .movie-card {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .movie-card h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .movie-card img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        /* Add CSS styles for movie slots container */
+        .movie-slots {
+            display: none;
+        }
+
+        .movie-slots.visible {
+            display: block;
+        }
+
+        /* Add CSS styles for modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .close-modal {
+            background-color: #ff5555;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-modal:hover {
+            background-color: #e64444;
+        }
+
+        /* Responsive styles for the modal */
+        @media screen and (max-width: 600px) {
+            .modal {
+                max-width: 90%;
+                max-height: 90%;
+            }
+        }
+
+        .movie-card {
+            /*Cool marine gradient: Grey, blue, violet, grey again */
+            background: linear-gradient(45deg,
+                    #bdc3c7,
+                    #2c3e50,
+                    #c33764,
+                    #323fb5,
+                    /* #141e30, */
+                    #6dd5ed);
+            background-size: 400% 400%;
+            animation: backgroundChange8 15s ease infinite;
+        }
+
+        @keyframes backgroundChange8 {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        /* #movieContainer h2,p,h5{
+            color: rgb(222, 27, 27);
+        } */
+    </style>
 </head>
 
 <body onload="AddCarouselButtons(); CheckSizeAttributes(); AddCards(); MakeJumbotron(); CheckCards(); ResizeHeader();"
@@ -55,6 +173,9 @@
             </div>
         </div>
     </div>
+    <div class="movie-container" id="movieContainer">
+        <!-- Movie cards will be dynamically added here -->
+    </div>
     <div class="watch-later-modal">
         <h3>Added <a href="#" class="movie"></a> to your <a href="#" class="playlist">WATCH LATER</a> playlist!</h3>
         <div class="side-buttons">
@@ -71,7 +192,7 @@
 
         </div>
     </div>
-    <h1>hellow</h1>
+
     <div class="bottom">
         <div class="btn-row">
             <h4>Help Center</h4>
@@ -116,3 +237,153 @@
 </html>
 <script src="../script/index.js"></script>
 <script src="../script/movie.js"></script>
+
+<script>
+    const movieContainer = document.getElementById('movieContainer');
+
+    function fetchMovies() {
+        fetch('http://127.0.0.1:5000//api/movies-with-shows') // Replace with the correct API endpoint for movie data
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(movie => createMovieCard(movie));
+            })
+            .catch(error => console.error('Error fetching movies:', error));
+    }
+
+    function createMovieCard(movie) {
+        const movieCard = document.createElement('div');
+        movieCard.classList.add('movie-card');
+
+        movieCard.innerHTML = `
+           
+            <img src="${movie.image}" alt="${movie.title}" />
+            <h2>Movie:-${movie.title}</h2>
+            <h5>Description:- ${movie.description}</h5>
+            <h5>genre:- ${movie.genre}</h5><br/>
+            <!-- Add other movie details as needed -->
+
+            <button class="show-slots-btn" data-id="${movie._id}">Show Movie Slots</button>
+            <div class="movie-slots" id="movieSlots-${movie._id}">
+            <!-- Movie slots will be dynamically added here -->
+            </div>
+        `;
+
+        const showSlotsBtn = movieCard.querySelector('.show-slots-btn');
+        showSlotsBtn.addEventListener('click', () => {
+            const movieId = showSlotsBtn.getAttribute('data-id');
+            toggleMovieSlots(movieId);
+            showModal(movieId)
+        });
+
+        movieContainer.appendChild(movieCard);
+    }
+    function showModal(movieId) {
+        const movieSlots = document.getElementById(`movieSlots-${movieId}`);
+        const slotsData = movieSlots.innerHTML;
+
+        const modalContent = document.createElement('div');
+        modalContent.innerHTML = `
+            <div class="modal-overlay">
+            <div class="modal">
+                <h2>Show Movie Slots</h2>
+                ${slotsData}
+                <button class="close-modal" onclick="closeModal()">Close</button>
+            </div>
+            </div>
+        `;
+
+        document.body.appendChild(modalContent);
+
+        // const modalContent = document.createElement('div');
+        modalContent.innerHTML = `
+            <div class="modal-overlay">
+            <div class="modal">
+                <h2>Show Movie Slots</h2>
+                ${slotsData}
+                <form id="bookingForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+                <label for="tickets">Number of Tickets:</label>
+                <input type="number" id="tickets" min="1" required>
+                <label for="timings">Timings:</label>
+                <input type="text" id="timings" required><br/>
+                <label for="categories">Categories:</label>
+                <input type="text" id="categories" required>
+                <button type="submit">Book Now</button>
+                </form>
+                <button class="close-modal" onclick="closeModal()">Close</button>
+            </div>
+            </div>
+        `;
+
+        modalContainer.appendChild(modalContent);
+
+        const bookingForm = document.getElementById('bookingForm');
+        bookingForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(bookingForm);
+            const bookingData = {
+                movieId: movieId,
+                name: formData.get('name'),
+                email: formData.get('email'),
+                tickets: parseInt(formData.get('tickets'))
+            };
+            bookShow(bookingData);
+        });
+
+
+
+
+    }
+
+
+
+    function bookShow(bookingData) {
+        // Here, you should make an API call to book the show
+        // For this example, we'll just display a simple success message
+
+        const successMessage = `
+            <div class="modal-overlay">
+            <div class="modal">
+                <h2>Booking Successful</h2>
+                <p>Movie ID: ${bookingData.movieId}</p>
+                <p>Name: ${bookingData.name}</p>
+                <p>Email: ${bookingData.email}</p>
+                <p>Tickets: ${bookingData.tickets}</p>
+                <button class="close-modal" onclick="closeModal()">Close</button>
+            </div>
+            </div>
+        `;
+
+        modalContainer.innerHTML = successMessage;
+    }
+
+
+    function closeModal() {
+        const modalOverlay = document.querySelector('.modal-overlay');
+        modalOverlay.remove();
+    }
+
+
+    function toggleMovieSlots(movieId) {
+        const movieSlots = document.getElementById(`movieSlots-${movieId}`);
+        movieSlots.classList.toggle('visible');
+
+        fetch(`http://127.0.0.1:5000//api/movies/${movieId}/shows`) // Replace with the correct API endpoint for movie slots
+            .then(response => response.json())
+            .then(slots => {
+                movieSlots.innerHTML = '';
+                slots.forEach(slot => {
+                    const slotElement = document.createElement('p');
+                    slotElement.textContent = `Timing: ${slot.timings}, Categories: ${slot.categories}`;
+                    movieSlots.appendChild(slotElement);
+                });
+            })
+            .catch(error => console.error(`Error fetching slots for movie ${movieId}:`, error));
+    }
+
+    window.onload = fetchMovies;
+
+</script>
