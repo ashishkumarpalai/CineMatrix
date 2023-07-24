@@ -242,7 +242,7 @@
     const movieContainer = document.getElementById('movieContainer');
 
     function fetchMovies() {
-        fetch('http://127.0.0.1:5000//api/movies-with-shows') // Replace with the correct API endpoint for movie data
+        fetch('https://cinematrix.onrender.com/api/movies-with-shows') // Replace with the correct API endpoint for movie data
             .then(response => response.json())
             .then(data => {
                 data.forEach(movie => createMovieCard(movie));
@@ -371,7 +371,7 @@
         const movieSlots = document.getElementById(`movieSlots-${movieId}`);
         movieSlots.classList.toggle('visible');
 
-        fetch(`http://127.0.0.1:5000//api/movies/${movieId}/shows`) // Replace with the correct API endpoint for movie slots
+        fetch(`https://cinematrix.onrender.com/api/movies/${movieId}/shows`) // Replace with the correct API endpoint for movie slots
             .then(response => response.json())
             .then(slots => {
                 movieSlots.innerHTML = '';

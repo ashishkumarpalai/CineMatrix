@@ -276,7 +276,7 @@ def get_movies_with_shows():
                 '_id': str(show['_id']),
                 'timings': show['timings'],
                 'categories': show['categories'],
-                'genre':show['genre']
+                # 'genre':show['genre']
             })
 
         result.append({

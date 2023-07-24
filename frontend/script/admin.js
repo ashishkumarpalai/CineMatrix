@@ -11,7 +11,7 @@ let todos = [];
 let dtodos = [];
 // Retrieve todos from API and display them in the table
 function getTodos() {
-    fetch('http://127.0.0.1:5000/users', {
+    fetch('https://cinematrix.onrender.com/users', {
         method: 'GET',
         //  credentials: 'same-origin' 
         headers: {
@@ -55,7 +55,7 @@ todosTable.addEventListener('click', (event) => {
     if (event.target.classList.contains('deleteTodoBtn')) {
         const todoId = (event.target.dataset.id);
         // console.log(localStorage.getItem("token"));
-        fetch(`http://127.0.0.1:5000/users/${todoId}`, {
+        fetch(`https://cinematrix.onrender.com/users/${todoId}`, {
             method: 'DELETE',
             // credentials: 'include' ,
             headers: {
@@ -107,7 +107,7 @@ loginForm.addEventListener('submit', function (event) {
     // Perform login logic here...
     // ...
     if (email && password != "") {
-        fetch("http://127.0.0.1:5000/register", {
+        fetch("https://cinematrix.onrender.com/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formDataObject)
@@ -208,7 +208,7 @@ function appointmentdiv() {
 
 //////doctor get all the data
 function getDoctorTodos() {
-    fetch('http://127.0.0.1:5000/api/movies-with-shows', {
+    fetch('https://cinematrix.onrender.com/api/movies-with-shows', {
         method: 'GET',
         //  credentials: 'same-origin' 
         headers: {
@@ -259,7 +259,7 @@ doctortodosTable.addEventListener('click', (event) => {
     if (event.target.classList.contains('deleteTodoBtn')) {
         const todoId = (event.target.dataset.id);
         // console.log(localStorage.getItem("token"));
-        fetch(`http://127.0.0.1:5000/api/movies/${todoId}`, {
+        fetch(`https://cinematrix.onrender.com/api/movies/${todoId}`, {
             method: 'DELETE',
             // credentials: 'include' ,
             headers: {
@@ -316,7 +316,7 @@ loginDForm.addEventListener('submit', function (event) {
     // Perform login logic here...
     // ...
     if (description && genre && image && title != "") {
-        fetch("http://127.0.0.1:5000/api/movies", {
+        fetch("https://cinematrix.onrender.com/api/movies", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -401,7 +401,7 @@ loginSForm.addEventListener('submit', function (event) {
     // Perform login logic here...
     // ...
     if (timings && categories && movie_id != "") {
-        fetch(`http://127.0.0.1:5000/api/movies/${formDataObject.movie_id}/shows`, {
+        fetch(`https://cinematrix.onrender.com/api/movies/${formDataObject.movie_id}/shows`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
