@@ -26,7 +26,7 @@ form1.addEventListener("click", (e) => {
         password: document.getElementById("password").value
     }
     console.log(payload)
-    fetch("http://127.0.0.1:5000/register", {
+    fetch("https://cinematrix.onrender.com/register", {
         method: "POST",
         headers: {
             "Content-type": "application/json"
@@ -75,7 +75,7 @@ form2.addEventListener("click", (e) => {
         localStorage.setItem("admin", payload.email);
         window.location.href="admin.html"
     }
-    fetch("http://127.0.0.1:5000/login", {
+    fetch("https://cinematrix.onrender.com/login", {
         method: "POST",
         headers: {
             "Content-type": "application/json"
